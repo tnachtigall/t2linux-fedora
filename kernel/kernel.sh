@@ -63,3 +63,4 @@ set_kconfig_x86_64 'CONFIG_CMDLINE_BOOL=y'
 set_kconfig_x86_64 '# CONFIG_CMDLINE_OVERRIDE is not set'
 
 cat "linux-t2-patches"/*.patch > "t2linux-combined.patch"
+cat "vega20_mpx_bounds_check.patch" >> "t2linux-combined.patch"

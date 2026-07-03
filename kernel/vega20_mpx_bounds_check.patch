@@ -1,0 +1,25 @@
+--- vega20_hwmgr.c.orig	2026-07-03 21:38:00
++++ vega20_hwmgr.c	2026-07-03 21:39:28
+@@ -3798,11 +3798,22 @@
+ 	bool disable_fclk_switching;
+ 	uint32_t i, latency;
+ 
++	/* Apple MPX VBIOS delegates memory thermal management to the T2 chip,
++	 * resulting in a 0-size MemMclks powerplay array.
++	 * Bypass to prevent UBSAN out-of-bounds read on TB3/ODM Combine requests.
++	 */
++	if (!mclk_table || mclk_table->count == 0) {
++		pr_info("amdgpu: Bypassing memory clock adjust rules (empty mclk_table)\n");
++		disable_mclk_switching = true;
++		goto skip_mclk_adjust;
++	}
++
+ 	disable_mclk_switching = ((1 < hwmgr->display_config->num_display) &&
+ 				!hwmgr->display_config->multi_monitor_in_sync) ||
+ 				vblank_too_short;
+ 	latency = hwmgr->display_config->dce_tolerable_mclk_in_active_latency;
+ 
++skip_mclk_adjust:
+ 	/* gfxclk */
+ 	dpm_table = &(data->dpm_table.gfx_table);
+ 	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
