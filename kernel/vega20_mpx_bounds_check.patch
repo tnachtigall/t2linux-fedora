@@ -1,5 +1,5 @@
---- a/drivers/drm/amd/pm/powerplay/hwmgr/vega20_hwmgr.c
-+++ b/drivers/drm/amd/pm/powerplay/hwmgr/vega20_hwmgr.c
+--- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega20_hwmgr.c
++++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega20_hwmgr.c
 @@ -3798,9 +3798,19 @@
  	bool disable_fclk_switching;
  	uint32_t i, latency;
