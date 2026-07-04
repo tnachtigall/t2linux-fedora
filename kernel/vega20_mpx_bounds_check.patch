@@ -12,7 +12,7 @@
 +    * Bypass to prevent UBSAN out-of-bounds read on TB3/ODM Combine requests.
 +    */
 +    if (data->dpm_table.mem_table.count == 0) {
-+        pr_info_ratelimited("amdgpu: Bypassing memory clock adjust rules (empty mem_table)\n");
++    	pr_info_ratelimited("amdgpu: Bypassing memory clock adjust rules (empty mem_table)\n");
 +    	data->mclk_latency_table.count = 0;
 +    	disable_mclk_switching = false;
 +    } else {
