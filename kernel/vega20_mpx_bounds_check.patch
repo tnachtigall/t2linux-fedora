@@ -1,8 +1,8 @@
 --- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega20_hwmgr.c
 +++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega20_hwmgr.c
 @@ -3798,9 +3798,19 @@
- 	bool disable_fclk_switching;
- 	uint32_t i, latency;
+	bool disable_fclk_switching;
+	uint32_t i, latency;
  
 -	disable_mclk_switching = ((1 < hwmgr->display_config->num_display) &&
 -				!hwmgr->display_config->multi_monitor_in_sync) ||
@@ -17,16 +17,16 @@
 +		disable_mclk_switching = false;
 +	} else {
 +		disable_mclk_switching = ((1 < hwmgr->display_config->num_display) &&
-+					!hwmgr->display_config->multi_monitor_in_sync) ||
-+					vblank_too_short;
++			!hwmgr->display_config->multi_monitor_in_sync) ||
++			vblank_too_short;
 +	}
- 
- 	latency = hwmgr->display_config->dce_tolerable_mclk_in_active_latency;
+
+	latency = hwmgr->display_config->dce_tolerable_mclk_in_active_latency;
  
 @@ -3830,28 +3840,31 @@
- 
- 	/* memclk */
- 	dpm_table = &(data->dpm_table.mem_table);
+
+	/* memclk */
+	dpm_table = &(data->dpm_table.mem_table);
 -	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 -	dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
 -	dpm_table->dpm_state.hard_min_level = dpm_table->dpm_levels[0].value;
@@ -43,7 +43,7 @@
 +		dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
 +		dpm_table->dpm_state.hard_min_level = dpm_table->dpm_levels[0].value;
 +		dpm_table->dpm_state.hard_max_level = VG20_CLOCK_MAX_DEFAULT;
- 
+
 -		if (hwmgr->dpm_level == AMD_DPM_FORCED_LEVEL_PROFILE_MIN_MCLK) {
 -			dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 -			dpm_table->dpm_state.soft_max_level = dpm_table->dpm_levels[0].value;
@@ -53,7 +53,7 @@
 +				dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[VEGA20_UMD_PSTATE_MCLK_LEVEL].value;
 +				dpm_table->dpm_state.soft_max_level = dpm_table->dpm_levels[VEGA20_UMD_PSTATE_MCLK_LEVEL].value;
 +			}
- 
+
 -		if (hwmgr->dpm_level == AMD_DPM_FORCED_LEVEL_PROFILE_PEAK) {
 -			dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[dpm_table->count - 1].value;
 -			dpm_table->dpm_state.soft_max_level = dpm_table->dpm_levels[dpm_table->count - 1].value;
@@ -71,6 +71,6 @@
 +		}
 +	}
 +
- 	/* honour DAL's UCLK Hardmin */
- 	if (dpm_table->dpm_state.hard_min_level < (hwmgr->display_config->min_mem_set_clock / 100))
- 		dpm_table->dpm_state.hard_min_level = hwmgr->display_config->min_mem_set_clock / 100;
+	/* honour DAL's UCLK Hardmin */
+	if (dpm_table->dpm_state.hard_min_level < (hwmgr->display_config->min_mem_set_clock / 100))
+		dpm_table->dpm_state.hard_min_level = hwmgr->display_config->min_mem_set_clock / 100;
