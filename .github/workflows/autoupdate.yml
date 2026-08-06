@@ -90,11 +90,34 @@ jobs:
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git commit -a -m "kernel: Update to v${{ env.kernel_version }}"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            echo "has_changes=no" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          echo "has_changes=yes" >> "$GITHUB_ENV"
+          git commit -m "kernel: Update to v${{ env.kernel_version }}"
 
       - name: Push changes to the repo
-        if: env.kernel_update == 'yes'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+        if: env.has_changes == 'yes'
+        run: |
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              echo "Rebase failed on attempt $attempt"
+              git rebase --abort || true
+              exit 1
+            fi
+
+            if git push origin HEAD:main; then
+              echo "Push succeeded on attempt $attempt"
+              exit 0
+            fi
+
+            echo "Push failed on attempt $attempt, retrying..."
+            sleep $((attempt * 5))
+          done
+
+          echo "Failed to push changes after 3 attempts"
+          exit 1
